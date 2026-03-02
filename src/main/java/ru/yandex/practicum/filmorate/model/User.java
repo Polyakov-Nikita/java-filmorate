@@ -2,7 +2,9 @@ package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,34 +12,33 @@ import ru.yandex.practicum.filmorate.controller.Storable;
 
 import java.time.LocalDate;
 
-/**
- * Film.
- */
 @Data
 @Builder(toBuilder = true)
 @EqualsAndHashCode(exclude = {"id"})
-public class Film implements Storable {
+public class User implements Storable {
     private Long id;
+    @Email
+    @Builder.Default
+    private String email = "";
     @NotBlank
+    @Builder.Default
+    private String login = "";
     @Builder.Default
     private String name = "";
-    @NotBlank
+    @Past
     @Builder.Default
-    private String description = "";
-    @Builder.Default
-    private LocalDate releaseDate = LocalDate.MIN;
-    private int duration;
+    private LocalDate birthday = LocalDate.MIN;
 
     @JsonCreator
-    public Film(@JsonProperty("id") Long id,
+    public User(@JsonProperty("id") Long id,
+                @JsonProperty("email") String email,
+                @JsonProperty("login") String login,
                 @JsonProperty("name") String name,
-                @JsonProperty("description") String description,
-                @JsonProperty("releaseDate") LocalDate releaseDate,
-                @JsonProperty("duration") int duration) {
+                @JsonProperty("birthday") LocalDate birthday) {
         this.id = id;
+        this.email = email;
+        this.login = login;
         this.name = name;
-        this.description = description;
-        this.releaseDate = releaseDate;
-        this.duration = duration;
+        this.birthday = birthday;
     }
 }
