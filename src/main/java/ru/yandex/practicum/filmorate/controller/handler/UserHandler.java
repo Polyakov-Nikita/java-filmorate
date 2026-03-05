@@ -14,7 +14,7 @@ public class UserHandler {
 
     public ResponseEntity<User> create(User user) {
         fixName(user);
-        log.trace("Передача запроса на добавление фильма {} в контейнер", user);
+        log.debug("Передача запроса на добавление пользователя {} в контейнер", user);
         return container.create(user);
     }
 
@@ -30,12 +30,12 @@ public class UserHandler {
 
     public ResponseEntity<User> update(User user) {
         fixName(user);
-        log.trace("Передача запроса на обновление фильма {} в контейнер", user);
+        log.debug("Передача запроса на обновление пользователя {} в контейнер", user);
         return container.update(user);
     }
 
     public ResponseEntity<List<User>> geatAll() {
-        log.trace("Передача запроса на получение всех фильмов в контейнер");
+        log.debug("Передача запроса на получение всех пользователей в контейнер");
         return container.geatAll();
     }
 }

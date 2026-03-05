@@ -21,19 +21,19 @@ public class UserController  {
 
     @PostMapping
     public ResponseEntity<User> add(@Valid @RequestBody User user) {
-        log.info("Получен POST-запрос на добавление фильма {}", user);
+        log.info("Получен POST-запрос на добавление пользователя {}", user);
         return handler.create(user);
     }
 
     @PutMapping
     public ResponseEntity<User> update(@Valid @RequestBody User user) {
-        log.info("Получен PUT-запрос на обновление фильма {}", user);
+        log.info("Получен PUT-запрос на обновление пользователя {}", user);
         return handler.update(user);
     }
 
     @GetMapping
     public ResponseEntity<List<User>> getAll() {
-        log.info("Получен GET-запрос на получение всех фильмов");
+        log.info("Получен GET-запрос на получение всех пользователей");
         return handler.geatAll();
     }
 }
