@@ -1,12 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import ru.yandex.practicum.filmorate.controller.Storable;
+import ru.yandex.practicum.filmorate.model.validation.MinDate;
 
 import java.time.LocalDate;
 
@@ -14,30 +11,15 @@ import java.time.LocalDate;
  * Film.
  */
 @Data
-@Builder(toBuilder = true)
-@EqualsAndHashCode(exclude = {"id"})
-public class Film implements Storable {
+@Builder
+public class Film implements Model {
     private Long id;
     @NotBlank
-    @Builder.Default
-    private String name = "";
-    @NotBlank
-    @Builder.Default
-    private String description = "";
-    @Builder.Default
-    private LocalDate releaseDate = LocalDate.MIN;
+    private String name;
+    @Size(min = 1, max = 200)
+    private String description;
+    @MinDate
+    private LocalDate releaseDate;
+    @Min(1)
     private int duration;
-
-    @JsonCreator
-    public Film(@JsonProperty("id") Long id,
-                @JsonProperty("name") String name,
-                @JsonProperty("description") String description,
-                @JsonProperty("releaseDate") LocalDate releaseDate,
-                @JsonProperty("duration") int duration) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.releaseDate = releaseDate;
-        this.duration = duration;
-    }
 }

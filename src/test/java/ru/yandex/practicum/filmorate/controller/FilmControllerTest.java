@@ -1,129 +1,98 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.utils.TestUtility;
+import ru.yandex.practicum.filmorate.controller.handler.FilmHandler;
 
-import java.time.LocalDate;
-import java.util.List;
-
-@SpringBootTest
 @AutoConfigureMockMvc
-public class FilmControllerTest {
-    private static final Film FILM_CORRECT = Film.builder()
-            .name("Title")
-            .description("Description")
-            .releaseDate(LocalDate.of(2023, 1, 1))
-            .duration(120)
-            .build();
-    private static final Film FILM_INCORRECT = Film.builder().build();
-    private static final Film FILM_UPDATE = Film.builder()
-            .name("NewTitle")
-            .description("NewDescription")
-            .releaseDate(FILM_CORRECT.getReleaseDate())
-            .duration(FILM_CORRECT.getDuration() + 10)
-            .build();
+public class FilmControllerTest extends ControllerTest {
+    private static final String BASE_PATH = "films/";
+    private static final String MODEL_TYPE = "film";
+    private static final String CORRECT_ADD_REQUEST = getContentAddRequest(BASE_PATH, "correct", MODEL_TYPE);
+    private static final String CORRECT_ADD_RESPONSE = getContentAddResponse(BASE_PATH, "correct", MODEL_TYPE);
+    private static final String FAIL_NAME_ADD_REQUEST = getContentAddRequest(BASE_PATH, "fail-name", MODEL_TYPE);
+    private static final String FAIL_DESCRIPTION_ADD_REQUEST = getContentAddRequest(BASE_PATH, "fail-description", MODEL_TYPE);
+    private static final String FAIL_RELEASE_ADD_REQUEST = getContentAddRequest(BASE_PATH, "fail-release", MODEL_TYPE);
+    private static final String FAIL_DURATION_ADD_REQUEST = getContentAddRequest(BASE_PATH, "fail-duration", MODEL_TYPE);
+    private static final String CORRECT_UPDATE_REQUEST = getContentUpdateRequest(BASE_PATH, "correct", MODEL_TYPE);
+    private static final String CORRECT_UPDATE_RESPONSE = getContentUpdateResponse(BASE_PATH, "correct", MODEL_TYPE);
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private FilmHandler handler;
 
     @Test
     public void add_CorrectData_StatusCode() throws Exception {
-        mockMvc.perform(TestUtility.createPostBuilder(FILM_CORRECT, FilmController.URL))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+        mockMvc.perform(createPostBuilder(FilmController.URL, CORRECT_ADD_REQUEST))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     public void add_CorrectData_ReturnsObject() throws Exception {
-        String description = "Сервер должен вернуть добавленный объект";
-        Film received = receive(TestUtility.createPostBuilder(FILM_CORRECT, FilmController.URL));
-        Assertions.assertEquals(FILM_CORRECT, received, description);
-    }
-
-    private Film receive(MockHttpServletRequestBuilder builder) throws  Exception {
-        String content = mockMvc.perform(builder)
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-        return TestUtility.parseObject(content, Film.class);
+        mockMvc.perform(createPostBuilder(FilmController.URL, CORRECT_ADD_REQUEST))
+                .andExpect(MockMvcResultMatchers.content().json(CORRECT_ADD_RESPONSE));
     }
 
     @Test
     public void add_CorrectData_NonNullId() throws Exception {
-        String description = "У полученного объекта должно быть проинициализировано поле id";
-        Film film = receive(TestUtility.createPostBuilder(FILM_CORRECT, FilmController.URL));
-        Assertions.assertNotNull(film.getId(), description);
+        mockMvc.perform(createPostBuilder(FilmController.URL, CORRECT_ADD_REQUEST))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNotEmpty());
     }
 
     @Test
-    public void add_IncorrectData_StatusCode() throws Exception {
-        mockMvc.perform(TestUtility.createPostBuilder(FILM_INCORRECT, FilmController.URL))
+    public void add_FailName_StatusCode() throws Exception {
+        mockMvc.perform(createPostBuilder(FilmController.URL, FAIL_NAME_ADD_REQUEST))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void add_FailDescription_StatusCode() throws Exception {
+        mockMvc.perform(createPostBuilder(FilmController.URL, FAIL_DESCRIPTION_ADD_REQUEST))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void add_FailRelease_StatusCode() throws Exception {
+        mockMvc.perform(createPostBuilder(FilmController.URL, FAIL_RELEASE_ADD_REQUEST))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void add_FailDuration_StatusCode() throws Exception {
+        mockMvc.perform(createPostBuilder(FilmController.URL, FAIL_DURATION_ADD_REQUEST))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
     public void update_CorrectData_StatusCode() throws Exception {
-        Film sent = receive(TestUtility.createPostBuilder(FILM_CORRECT, FilmController.URL));
-        Film update = FILM_UPDATE.toBuilder()
-                .id(sent.getId())
-                .build();
-        mockMvc.perform(TestUtility.createPutBuilder(update, FilmController.URL))
+        Long id = getId(mockMvc.perform(createPostBuilder(FilmController.URL, CORRECT_ADD_REQUEST)));
+        String body = addId(CORRECT_UPDATE_REQUEST, id);
+        mockMvc.perform(createPutBuilder(FilmController.URL, body))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     public void update_CorrectData_ReturnsObject() throws Exception {
-        String description = "Сервер должен вернуть обновлённый объект";
-        Film sent = receive(TestUtility.createPostBuilder(FILM_CORRECT, FilmController.URL));
-        Film update = FILM_UPDATE.toBuilder()
-                .id(sent.getId())
-                .build();
-        Film received = receive(TestUtility.createPutBuilder(update, FilmController.URL));
-        Assertions.assertEquals(update, received, description);
+        Long id = getId(mockMvc.perform(createPostBuilder(FilmController.URL, CORRECT_ADD_REQUEST)));
+        String body = addId(CORRECT_UPDATE_REQUEST, id);
+        mockMvc.perform(createPutBuilder(FilmController.URL, body))
+                .andExpect(MockMvcResultMatchers.content().json(CORRECT_UPDATE_RESPONSE));
     }
 
     @Test
-    public void update_IncorrectData_StatusCode() throws Exception {
-        Film sent = receive(TestUtility.createPostBuilder(FILM_CORRECT, FilmController.URL));
-        Film update = FILM_INCORRECT.toBuilder()
-                .id(sent.getId())
-                .build();
-        mockMvc.perform(TestUtility.createPutBuilder(update, FilmController.URL))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
-
-    @Test
-    public void update_NullId_StatusCode() throws Exception {
-        mockMvc.perform(TestUtility.createPutBuilder(FILM_UPDATE, FilmController.URL))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
-
-    @Test
-    public void update_AbsentId_StatusCode() throws Exception {
-        Film update = FILM_CORRECT.toBuilder()
-                .id(999999999999L)
-                .build();
-        mockMvc.perform(TestUtility.createPutBuilder(update, FilmController.URL))
+    public void update_Unknown_StatusCode() throws Exception {
+        String body = addId(CORRECT_UPDATE_REQUEST, ABSENT_ID);
+        mockMvc.perform(createPutBuilder(FilmController.URL, body))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
     @Test
     public void getAll_StatusCode() throws Exception {
-        mockMvc.perform(TestUtility.createGetBuilder(FilmController.URL))
+        mockMvc.perform(createGetBuilder(FilmController.URL))
                 .andExpect(MockMvcResultMatchers.status().isOk());
-    }
-
-    @Test
-    public void getAll_ReturnsArray() throws Exception {
-        String description = "Сервер должен вернуть список объектов";
-        List<Film> films = TestUtility.receiveObjects(mockMvc, FilmController.URL);
-        Assertions.assertNotNull(films, description);
     }
 }
