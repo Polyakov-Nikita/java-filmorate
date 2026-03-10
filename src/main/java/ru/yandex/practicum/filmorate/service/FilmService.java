@@ -2,8 +2,8 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.QueryParameterNotValidException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -17,9 +17,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage storage;
-
-    @Autowired
-    private UserStorage userStorage;
+    private final UserStorage userStorage;
 
     public Film create(Film film) {
         log.debug("Передача запроса на добавление фильма {} в контейнер", film);
@@ -48,11 +46,19 @@ public class FilmService {
     }
 
     public List<Film> getPopular(int count) {
-        log.debug("Передача запроса на получение {} самых популярных фильмов в контейнер", count);
+        checkCount(count);
+        log.debug("Получение {} самых популярных фильмов в контейнер", count);
         return storage.getAll().stream()
                 .sorted(Comparator.comparing(Film::getLikes, Comparator.comparingInt(Set::size)).reversed())
                 .limit(count)
                 .toList();
+    }
+
+    private void checkCount(int count) {
+        if (count <= 0) {
+            throw new QueryParameterNotValidException("count", String.valueOf(count),
+                    "Должен быть положительным значением.");
+        }
     }
 
     public void deleteLike(long filmId, long likerId) {

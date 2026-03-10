@@ -176,6 +176,11 @@ public class FilmControllerTest extends ControllerTest {
     }
 
     @Test
+    public void getPopular_IncorrectCount_StatusCode() {
+        expectStatusIsBadRequest(performGetPopular(-1));
+    }
+
+    @Test
     public void deleteLike_StatusCode() {
         Long filmId = getId(performPost(FilmController.URL_BASE, CORRECT_ADD_REQUEST));
         Long likerId = getId(performPost(UserController.URL_BASE, UserControllerTest.CORRECT_ADD_REQUEST));

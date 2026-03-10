@@ -41,9 +41,10 @@ public class UserService {
 
     public void addFriend(long userId, long friendId) {
         log.debug("Добавление в друзья пользователя с id={} пользователя с id={}", userId, friendId);
-        storage.checkId(friendId);
-        get(userId).addFriend(friendId);
-        get(friendId).addFriend(userId);
+        User user = get(userId);
+        User friend = get(friendId);
+        user.addFriend(friendId);
+        friend.addFriend(userId);
     }
 
     public List<User> getAll() {
@@ -82,8 +83,9 @@ public class UserService {
 
     public void deleteFriend(long userId, long friendId) {
         log.debug("Удаление из друзей пользователя с id={} пользователя с id={}", userId, friendId);
-        storage.checkId(friendId);
-        get(userId).deleteFriend(friendId);
-        get(friendId).deleteFriend(userId);
+        User user = get(userId);
+        User friend = get(friendId);
+        user.deleteFriend(friendId);
+        friend.deleteFriend(userId);
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.NullIdException;
+import ru.yandex.practicum.filmorate.exception.QueryParameterNotValidException;
 
 @Slf4j
 @RestControllerAdvice
@@ -46,5 +47,12 @@ public class ErrorHandler {
         } else {
             return new ErrorResponse("Некорректное значение параметра", "");
         }
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleQueryParameterNotValid(final QueryParameterNotValidException e) {
+        log.warn("Получен некорректный параметр строки запроса \"{}\"={}", e.getParameterName(), e.getParameterValue());
+        return new ErrorResponse("Некорректный параметр строки запроса", e.getMessage());
     }
 }
