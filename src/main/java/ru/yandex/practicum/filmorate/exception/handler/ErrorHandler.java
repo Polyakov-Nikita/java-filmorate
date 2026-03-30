@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFriendException;
 import ru.yandex.practicum.filmorate.exception.NullIdException;
 import ru.yandex.practicum.filmorate.exception.QueryParameterNotValidException;
 
@@ -54,5 +55,12 @@ public class ErrorHandler {
     public ErrorResponse handleQueryParameterNotValid(final QueryParameterNotValidException e) {
         log.warn("Получен некорректный параметр строки запроса \"{}\"={}", e.getParameterName(), e.getParameterValue());
         return new ErrorResponse("Некорректный параметр строки запроса", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.OK)
+    public ErrorResponse handleNotFriend(final NotFriendException e) {
+        log.warn("Получен запрос на удаление не из друзей id={} не являющегося другом id={}", e.getFriendId(), e.getUserId());
+        return new ErrorResponse("Невозможно удалить из друзей", e.getMessage());
     }
 }

@@ -32,6 +32,8 @@ public class Film implements Model<Film> {
     private int duration;
     @Builder.Default
     private Set<Long> likes = new HashSet<>();
+    private Set<String> genres;
+    private String ratingMPA;
 
     @Override
     public void update(Film update) {
