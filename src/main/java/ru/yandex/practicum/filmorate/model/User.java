@@ -44,14 +44,10 @@ public class User implements Model<User> {
     }
 
     public void follow(User other) {
-        checkFriendshipNotExist(other.id);
-        subscriptions.add(other.id);
-    }
-
-    private void checkFriendshipNotExist(Long userId) {
-        if (friends.contains(userId)) {
-            throw new FriendshipAlreadyConfirmedException(id, userId);
+        if (friends.contains(other.id)) {
+            throw new FriendshipAlreadyConfirmedException(id, other.id);
         }
+        subscriptions.add(other.id);
     }
 
     public void confirmFriendship(User other) {
@@ -72,7 +68,9 @@ public class User implements Model<User> {
     }
 
     public void deleteFriend(User friend) {
-        checkFriendshipExist(friend.id);
+        if (!friends.contains(friend.id)) {
+            throw new NotFriendException(id, friend.id);
+        }
         friends.remove(friend.id);
         friend.moveToFollowers(id);
     }
@@ -80,11 +78,5 @@ public class User implements Model<User> {
     private void moveToFollowers(Long id) {
         friends.remove(id);
         subscriptions.add(id);
-    }
-
-    private void checkFriendshipExist(Long userId) {
-        if (!friends.contains(userId)) {
-            throw new NotFriendException(id, userId);
-        }
     }
 }
