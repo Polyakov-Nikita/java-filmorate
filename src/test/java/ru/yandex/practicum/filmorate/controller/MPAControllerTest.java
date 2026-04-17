@@ -17,11 +17,7 @@ public class MPAControllerTest extends ControllerTest {
 
     @Test
     public void get_ReturnsObject() {
-        String expectedJson = """
-                {
-                "id": 1,
-                "name": "G"
-                }""";
+        String expectedJson = "{\"id\": 1,\"name\": \"G\"}";
         expectContentJSON(performGet(MPAController.URL_BASE, 1L), expectedJson);
     }
 }

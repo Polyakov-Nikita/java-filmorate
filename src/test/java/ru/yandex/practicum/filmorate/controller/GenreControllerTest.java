@@ -17,11 +17,7 @@ public class GenreControllerTest extends ControllerTest {
 
     @Test
     public void get_ReturnsObject() {
-        String expectedJson = """
-                {
-                "id": 1,
-                "name": "Комедия"
-                }""";
+        String expectedJson = "{\"id\": 1, \"name\": \"Комедия\"}";
         expectContentJSON(performGet(GenreController.URL_BASE, 1L), expectedJson);
     }
 }
