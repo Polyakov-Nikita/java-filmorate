@@ -5,6 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.controller.mapper.FilmMapper;
+import ru.yandex.practicum.filmorate.dto.film.FilmAddRequest;
+import ru.yandex.practicum.filmorate.dto.film.FilmResponse;
+import ru.yandex.practicum.filmorate.dto.film.FilmUpdateRequest;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -14,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping(FilmController.URL_BASE)
 @RequiredArgsConstructor
+@SuppressWarnings("unused")
 public class FilmController {
     public static final String URL_BASE = "/films";
     public static final String URL_LIKE = "/like";
@@ -21,17 +26,22 @@ public class FilmController {
     public static final String COUNT_PARAMETER = "count";
 
     private final FilmService service;
+    private final FilmMapper mapper;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Film add(@Valid @RequestBody Film film) {
-        return service.create(film);
+    public FilmResponse add(@Valid @RequestBody FilmAddRequest request) {
+        Film film = mapper.toFilm(request);
+        Film result = service.create(film);
+        return mapper.toFilmResponse(result);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public Film update(@Valid @RequestBody Film film) {
-        return service.update(film);
+    public FilmResponse update(@Valid @RequestBody FilmUpdateRequest request) {
+        Film film = mapper.toFilm(request);
+        Film result = service.update(film);
+        return mapper.toFilmResponse(result);
     }
 
     @PutMapping("/{filmId}" + URL_LIKE + "/{likerId}")
@@ -42,20 +52,27 @@ public class FilmController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Film> getAll() {
-        return service.getAll();
+    public List<FilmResponse> getAll() {
+        List<Film> result = service.getAll();
+        return result.stream()
+                .map(mapper::toFilmResponse)
+                .toList();
     }
 
     @GetMapping("/{filmId}")
     @ResponseStatus(HttpStatus.OK)
-    public Film get(@PathVariable long filmId) {
-        return service.get(filmId);
+    public FilmResponse get(@PathVariable long filmId) {
+        Film result = service.get(filmId);
+        return mapper.toFilmResponse(result);
     }
 
     @GetMapping(URL_POPULAR)
     @ResponseStatus(HttpStatus.OK)
-    public List<Film> getPopular(@RequestParam(required = false, defaultValue = "10") int count) {
-        return service.getPopular(count);
+    public List<FilmResponse> getPopular(@RequestParam(required = false, defaultValue = "10") int count) {
+        List<Film> result = service.getPopular(count);
+        return result.stream()
+                .map(mapper::toFilmResponse)
+                .toList();
     }
 
     @DeleteMapping("/{filmId}" + URL_LIKE + "/{likerId}")

@@ -14,6 +14,7 @@ import ru.yandex.practicum.filmorate.exception.QueryParameterNotValidException;
 
 @Slf4j
 @RestControllerAdvice
+@SuppressWarnings("unused")
 public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -43,8 +44,7 @@ public class ErrorHandler {
         log.warn("Произошла ошибка валидации поля");
         FieldError fieldError = e.getFieldError();
         if (fieldError != null) {
-            return new ErrorResponse("Некорректное значение параметра",
-                    String.format("Значение параметра %s=%s некорректно", fieldError.getField(), fieldError.getRejectedValue()));
+            return new ErrorResponse("Некорректное значение параметра", String.format("Значение параметра %s=%s некорректно", fieldError.getField(), fieldError.getRejectedValue()));
         } else {
             return new ErrorResponse("Некорректное значение параметра", "");
         }

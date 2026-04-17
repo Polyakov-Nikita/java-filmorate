@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,17 +33,17 @@ public class UserService {
     }
 
     public User update(User user) {
+        storage.checkId(user.getId());
         fixName(user);
         log.debug("Передача запроса на обновление пользователя {} в контейнер", user);
-        return storage.update(user);
+        return storage.updateData(user);
     }
 
     public void addFriend(long userId, long friendId) {
-        log.debug("Добавление в друзья пользователя с id={} пользователя с id={}", userId, friendId);
-        User user = get(userId);
-        User friend = get(friendId);
-        user.follow(friend);
-        friend.confirmFriendship(user);
+        storage.checkId(userId);
+        storage.checkId(friendId);
+        log.debug("Передача запроса на добавление в друзья пользователя с id={} пользователя с id={} в контейнер", userId, friendId);
+        storage.addFriend(userId, friendId);
     }
 
     public List<User> getAll() {
@@ -53,12 +52,14 @@ public class UserService {
     }
 
     public User get(long userId) {
+        storage.checkId(userId);
         log.debug("Передача запроса на получение пользователя с id = {} в контейнер", userId);
         return storage.get(userId);
     }
 
     public Set<User> getFriends(long userId) {
         log.debug("Получение всех друзей пользователя с id={}", userId);
+        storage.checkId(userId);
         User user = get(userId);
         return user.getFriends().stream()
                 .map(this::get)
@@ -66,25 +67,14 @@ public class UserService {
     }
 
     public Set<User> getCommonFriends(long userId, long otherId) {
-        log.debug("Получение общих друзей пользователей с id={} и id={}", userId, otherId);
-        Set<Long> commonIds = getCommonIds(userId, otherId);
-        return commonIds.stream()
-                .map(this::get)
-                .collect(Collectors.toSet());
-    }
-
-    private Set<Long> getCommonIds(long userId, long otherId) {
-        Set<Long> userFriends = get(userId).getFriends();
-        Set<Long> otherFriends = get(otherId).getFriends();
-        Set<Long> common = new HashSet<>(userFriends);
-        common.retainAll(otherFriends);
-        return common;
+        log.debug("Передача запроса на получение общих друзей пользователей с id={} и id={} в контейнер", userId, otherId);
+        return storage.getCommonFriends(userId, otherId);
     }
 
     public void deleteFriend(long userId, long friendId) {
-        log.debug("Удаление из друзей пользователя с id={} пользователя с id={}", userId, friendId);
-        User user = get(userId);
-        User friend = get(friendId);
-        user.deleteFriend(friend);
+        log.debug("Передача запроса на удаление из друзей пользователя с id={} пользователя с id={} в контейнер", userId, friendId);
+        storage.checkId(userId);
+        storage.checkId(friendId);
+        storage.deleteFriend(userId, friendId);
     }
 }

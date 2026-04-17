@@ -2,5 +2,19 @@
   "name": "",
   "description": "Description",
   "releaseDate": "1900-03-25",
-  "duration": 200
+  "duration": 200,
+  "mpa": {
+    "id": 1
+  },
+  "genres": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    },
+    {
+      "id": 4
+    }
+  ]
 }

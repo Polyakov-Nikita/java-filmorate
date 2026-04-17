@@ -1,9 +1,8 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.memory;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.NullIdException;
-import ru.yandex.practicum.filmorate.model.Model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class ModelContainer<M extends Model<M>> {
+public class ModelContainer<M extends MemoryEntity<M>> {
     private final Map<Long, M> container = new HashMap<>();
 
     private long currentId = 0;
@@ -25,14 +24,6 @@ public class ModelContainer<M extends Model<M>> {
         return model;
     }
 
-    public M update(M modelUpdate) {
-        long modelId = modelUpdate.getId();
-        checkId(modelId);
-        container.get(modelId).update(modelUpdate);
-        log.info("Данные модели {} обновлены", modelUpdate);
-        return modelUpdate;
-    }
-
     public void checkId(Long id) {
         if (id == null) {
             throw new NullIdException();
@@ -42,13 +33,12 @@ public class ModelContainer<M extends Model<M>> {
         }
     }
 
-    public List<M> getAll() {
+    public List<M> getAllFromMemory() {
         log.info("Возврат списка моделей");
         return new ArrayList<>(container.values());
     }
 
-    public M get(long id) {
-        checkId(id);
+    public M getFromMemory(long id) {
         log.info("Возврат модели по id={}", id);
         return container.get(id);
     }

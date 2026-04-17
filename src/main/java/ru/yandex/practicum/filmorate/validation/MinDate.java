@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.model.validation;
+package ru.yandex.practicum.filmorate.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -11,6 +11,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = ReleaseDateValidator.class)
+@SuppressWarnings("unused")
 public @interface MinDate {
     String message() default "Дата должна быть не раньше 28.12.1895";
 

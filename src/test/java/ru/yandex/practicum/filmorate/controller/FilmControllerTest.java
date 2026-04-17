@@ -19,6 +19,8 @@ public class FilmControllerTest extends ControllerTest {
     public static final String FAIL_DESCRIPTION_ADD_REQUEST = getContentAddRequest(BASE_PATH, "fail-description", MODEL_TYPE);
     public static final String FAIL_RELEASE_ADD_REQUEST = getContentAddRequest(BASE_PATH, "fail-release", MODEL_TYPE);
     public static final String FAIL_DURATION_ADD_REQUEST = getContentAddRequest(BASE_PATH, "fail-duration", MODEL_TYPE);
+    public static final String FAIL_MPA_ADD_REQUEST = getContentAddRequest(BASE_PATH, "fail-mpa", MODEL_TYPE);
+    public static final String FAIL_GENRE_ADD_REQUEST = getContentAddRequest(BASE_PATH, "fail-genre", MODEL_TYPE);
     public static final String CORRECT_UPDATE_REQUEST = getContentUpdateRequest(BASE_PATH, "correct", MODEL_TYPE);
     public static final String CORRECT_UPDATE_RESPONSE = getContentUpdateResponse(BASE_PATH, "correct", MODEL_TYPE);
     private static final String LIKES_SET_NAME = "likes";
@@ -58,6 +60,16 @@ public class FilmControllerTest extends ControllerTest {
     @Test
     public void add_FailDuration_StatusCode() {
         expectStatusIsBadRequest(performPost(FilmController.URL_BASE, FAIL_DURATION_ADD_REQUEST));
+    }
+
+    @Test
+    public void add_FailMPA_StatusCode() {
+        expectStatusIsNotFound(performPost(FilmController.URL_BASE, FAIL_MPA_ADD_REQUEST));
+    }
+
+    @Test
+    public void add_FailGenre_StatusCode() {
+        expectStatusIsNotFound(performPost(FilmController.URL_BASE, FAIL_GENRE_ADD_REQUEST));
     }
 
     @Test

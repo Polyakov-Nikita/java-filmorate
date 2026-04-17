@@ -1,0 +1,14 @@
+{
+  "name": "Name",
+  "description": "Descrition",
+  "releaseDate": "1980-03-25",
+  "duration": 200,
+  "mpa": {
+    "id": 1
+  },
+  "genres": [
+    {
+      "id": 500
+    }
+  ]
+}
