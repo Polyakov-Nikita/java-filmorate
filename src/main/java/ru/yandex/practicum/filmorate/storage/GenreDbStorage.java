@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.db.storage;
+package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -7,8 +7,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.NullIdException;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.GenreStorage;
-import ru.yandex.practicum.filmorate.storage.db.requestbuilder.GenreRequestBuilder;
+import ru.yandex.practicum.filmorate.storage.requestbuilder.GenreRequestBuilder;
 
 import java.util.List;
 

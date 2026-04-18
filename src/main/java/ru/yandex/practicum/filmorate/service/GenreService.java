@@ -3,7 +3,9 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.genre.GenreResponse;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.service.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 
 import java.util.List;
@@ -13,15 +15,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GenreService {
     private final GenreStorage storage;
+    private final GenreMapper mapper;
 
-    public List<Genre> getAll() {
+    public List<GenreResponse> getAll() {
         log.debug("Передача запроса на получение всех жанров в контейнер");
-        return storage.getAll();
+        List<Genre> result = storage.getAll();
+        return result.stream()
+                .map(mapper::toGenreResponse)
+                .toList();
     }
 
-    public Genre get(long id) {
+    public GenreResponse get(long id) {
         storage.checkId(id);
         log.debug("Передача запроса на получение жанра с id = {} в контейнер", id);
-        return storage.get(id);
+        Genre result = storage.get(id);
+        return mapper.toGenreResponse(result);
     }
 }

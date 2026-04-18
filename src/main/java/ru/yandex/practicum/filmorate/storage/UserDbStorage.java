@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.db.storage;
+package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
@@ -9,8 +9,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.NullIdException;
 import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
-import ru.yandex.practicum.filmorate.storage.db.requestbuilder.UserRequestBuilder;
+import ru.yandex.practicum.filmorate.storage.requestbuilder.UserRequestBuilder;
 
 import java.util.HashSet;
 import java.util.List;
@@ -73,10 +72,16 @@ public class UserDbStorage extends DbStorage implements UserStorage {
     }
 
     private void compose(User user) {
-        List<Friendship> friendshipList = selectMany(requestBuilder.getFriends(user.getId()), friendshipRowMapper);
+        List<Friendship> friendshipList = selectMany(requestBuilder.getFriendships(user.getId()), friendshipRowMapper);
         for (Friendship friendship : friendshipList) {
             user.addFriend(friendship.friendId());
         }
+    }
+
+    @Override
+    public Set<User> getFriends(long userId) {
+        List<User> userFriends = selectMany(requestBuilder.getFriends(userId), userRowMapper);
+        return new HashSet<>(userFriends);
     }
 
     @Override
@@ -95,16 +100,8 @@ public class UserDbStorage extends DbStorage implements UserStorage {
     @Override
     public Set<User> getCommonFriends(long userId, long otherId) {
         log.debug("Получение общих друзей пользователей с id={} и id={}", userId, otherId);
-        List<Friendship> commonFriendIds = selectCommonFriendIds(userId, otherId);
-        Set<User> result = new HashSet<>();
-        for (Friendship friendship : commonFriendIds) {
-            result.add(get(friendship.friendId()));
-        }
-        result.forEach(this::compose);
-        return result;
-    }
-
-    private List<Friendship> selectCommonFriendIds(long userId, long otherId) {
-        return selectMany(requestBuilder.getCommonFriends(userId, otherId), friendshipRowMapper);
+        Set<User> commonFriends = new HashSet<>(selectMany(requestBuilder.getCommonFriends(userId, otherId), userRowMapper));
+        commonFriends.forEach(this::compose);
+        return commonFriends;
     }
 }

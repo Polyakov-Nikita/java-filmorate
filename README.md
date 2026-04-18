@@ -34,7 +34,7 @@ WHERE film_id = 1
 ```
 ---
 ### ТОП-10 по лайкам
-```
+```sql
 SELECT films.*
 FROM (SELECT film_id
       FROM likes
@@ -61,9 +61,11 @@ WHERE id = 1
 ---
 ### Получение списка друзей пользователя по id
 ```sql
-SELECT *
-FROM friends
-WHERE user_id = 1
+SELECT users.*
+FROM (SELECT friend_id
+      FROM friends
+      WHERE user_id = 1) user_friends
+JOIN users ON user_friends.friend_id = users.id
 ```
 ---
 ### Получение списка общих друзей пользователей

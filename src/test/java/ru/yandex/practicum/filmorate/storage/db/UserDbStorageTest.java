@@ -9,10 +9,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.NullIdException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.db.storage.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -89,6 +90,32 @@ public class UserDbStorageTest {
     }
 
     @Test
+    public void getFriends() {
+        String description = "Должен возвращать список друзей";
+        long createdId = storage.create(createUserData()).getId();
+        int friendsCount = 3;
+        long[] friendIds = addUsers(friendsCount);
+        addFriendsToId(createdId, friendIds);
+        Set<User> friendsActual = storage.getFriends(createdId);
+        Set<User> friendsExpected = collectToSet(friendIds);
+        Assertions.assertEquals(friendsExpected, friendsActual, description);
+    }
+
+    private void addFriendsToId(long userId, long[] friendIds) {
+        for (Long id : friendIds) {
+            storage.addFriend(userId, id);
+        }
+    }
+
+    private Set<User> collectToSet(long[] userIds) {
+        Set<User> users = new HashSet<>();
+        for (long userId : userIds) {
+            users.add(storage.get(userId));
+        }
+        return users;
+    }
+
+    @Test
     public void addFriend() {
         String description = "Возвращаемая запись должна содержать список друзей";
         int friendsCount = 5;
@@ -97,12 +124,6 @@ public class UserDbStorageTest {
         addFriendsToId(createdId, friendIds);
         Set<Long> receivedIds = storage.get(createdId).getFriends();
         Assertions.assertEquals(friendsCount, receivedIds.size(), description);
-    }
-
-    private void addFriendsToId(long userId, long[] friendIds) {
-        for (Long id : friendIds) {
-            storage.addFriend(userId, id);
-        }
     }
 
     @Test

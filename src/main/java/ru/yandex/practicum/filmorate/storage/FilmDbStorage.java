@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.db.storage;
+package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
@@ -8,8 +8,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.NullIdException;
 import ru.yandex.practicum.filmorate.model.*;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.db.requestbuilder.FilmRequestBuilder;
+import ru.yandex.practicum.filmorate.storage.requestbuilder.FilmRequestBuilder;
 
 import java.util.List;
 import java.util.Set;

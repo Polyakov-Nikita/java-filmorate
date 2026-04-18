@@ -1,14 +1,16 @@
-package ru.yandex.practicum.filmorate.storage.db.requestbuilder;
+package ru.yandex.practicum.filmorate.storage.requestbuilder;
 
 import org.springframework.stereotype.Component;
 
 @Component
 public abstract class RequestBuilder {
-    protected DBRequest getById(String tableName, String idName, long id) {
-        String query = buildSelect(tableName, idName);
-        Object[] params = new Object[1];
-        params[0] = id;
+    protected DBRequest createRequest(String query, Object... params) {
         return new DBRequest(query, params);
+    }
+
+    protected DBRequest getById(String tableName, String idName, long id) {
+        String query = buildSelectQuery(tableName, idName);
+        return createRequest(query, id);
     }
 
     public String buildInsertQuery(String tableName, String[] columns) {
@@ -39,7 +41,7 @@ public abstract class RequestBuilder {
         }
     }
 
-    public String buildUpdate(String tableName, String[] columns) {
+    public String buildUpdateQuery(String tableName, String[] columns) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(String.format("UPDATE %s SET ", tableName));
         appendFieldsUpdate(stringBuilder, columns);
@@ -55,7 +57,7 @@ public abstract class RequestBuilder {
         }
     }
 
-    public String buildSelect(String tableName, String parameter) {
+    public String buildSelectQuery(String tableName, String parameter) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(String.format("SELECT * FROM %s", tableName));
         if (parameter != null) {
@@ -64,11 +66,11 @@ public abstract class RequestBuilder {
         return stringBuilder.toString();
     }
 
-    public String buildSelect(String tableName) {
-        return buildSelect(tableName, null);
+    public String buildSelectQuery(String tableName) {
+        return buildSelectQuery(tableName, null);
     }
 
-    public String buildDelete(String tableName, String... params) {
+    public String buildDeleteQuery(String tableName, String... params) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(String.format("DELETE FROM %s WHERE ", tableName));
         appendParameters(stringBuilder, params);

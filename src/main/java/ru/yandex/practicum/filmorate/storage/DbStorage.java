@@ -1,11 +1,11 @@
-package ru.yandex.practicum.filmorate.storage.db.storage;
+package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import ru.yandex.practicum.filmorate.storage.db.requestbuilder.DBRequest;
+import ru.yandex.practicum.filmorate.storage.requestbuilder.DBRequest;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -20,10 +20,10 @@ public abstract class DbStorage {
     public static final String TABLE_LIKES = "likes";
     public static final String TABLE_USERS = "users";
     public static final String TABLE_FRIENDS = "friends";
-    public static final String PARAMETER_ID = "id";
-    public static final String PARAMETER_FILM_ID = "film_id";
-    public static final String PARAMETER_USER_ID = "user_id";
-    public static final String PARAMETER_FRIEND_ID = "friend_id";
+    public static final String COLUMN_ID = "id";
+    public static final String COLUMN_FILM_ID = "film_id";
+    public static final String COLUMN_USER_ID = "user_id";
+    public static final String COLUMN_FRIEND_ID = "friend_id";
 
     protected final JdbcTemplate jdbc;
 

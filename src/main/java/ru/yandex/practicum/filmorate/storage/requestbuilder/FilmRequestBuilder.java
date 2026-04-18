@@ -1,10 +1,10 @@
-package ru.yandex.practicum.filmorate.storage.db.requestbuilder;
+package ru.yandex.practicum.filmorate.storage.requestbuilder;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.model.Like;
-import ru.yandex.practicum.filmorate.storage.db.storage.DbStorage;
+import ru.yandex.practicum.filmorate.storage.DbStorage;
 
 @Component
 public class FilmRequestBuilder extends RequestBuilder {
@@ -28,10 +28,10 @@ public class FilmRequestBuilder extends RequestBuilder {
 
     public DBRequest insertFilm(Film film) {
         String query = buildInsertQuery(DbStorage.TABLE_FILMS, filmColumns);
-        return new DBRequest(query, getParams(film));
+        return createRequest(query, getFilmParams(film));
     }
 
-    private Object[] getParams(Film film) {
+    private Object[] getFilmParams(Film film) {
         Object[] params = new Object[5];
         params[0] = film.getName();
         params[1] = film.getDescription();
@@ -43,63 +43,52 @@ public class FilmRequestBuilder extends RequestBuilder {
 
     public DBRequest insertFilmGenre(FilmGenre filmGenre) {
         String query = buildInsertQuery(DbStorage.TABLE_GENRES_FILMS, filmGenreColumns);
-        Object[] params = new Object[2];
-        params[0] = filmGenre.filmId();
-        params[1] = filmGenre.genreId();
-        return new DBRequest(query, params);
+        return createRequest(query, filmGenre.filmId(), filmGenre.genreId());
     }
 
     public DBRequest insertLike(Like like) {
         String query = buildInsertQuery(DbStorage.TABLE_LIKES, likeColumns);
-        Object[] params = new Object[2];
-        params[0] = like.filmId();
-        params[1] = like.userId();
-        return new DBRequest(query, params);
+        return createRequest(query, like.filmId(), like.userId());
     }
 
     public DBRequest updateFilm(Film filmUpdate) {
-        String query = buildUpdate(DbStorage.TABLE_FILMS, filmColumns);
-        return new DBRequest(query, getParams(filmUpdate));
+        String query = buildUpdateQuery(DbStorage.TABLE_FILMS, filmColumns);
+        return createRequest(query, getFilmParams(filmUpdate));
     }
 
     public DBRequest getAll() {
-        String query = buildSelect(DbStorage.TABLE_FILMS);
-        return new DBRequest(query, new Object[0]);
+        String query = buildSelectQuery(DbStorage.TABLE_FILMS);
+        return createRequest(query);
     }
 
     public DBRequest getFilm(long filmId) {
-        return getById(DbStorage.TABLE_FILMS, DbStorage.PARAMETER_ID, filmId);
+        return getById(DbStorage.TABLE_FILMS, DbStorage.COLUMN_ID, filmId);
     }
 
     public DBRequest getMPA(long mpaId) {
-        return getById(DbStorage.TABLE_MPA, DbStorage.PARAMETER_ID, mpaId);
+        return getById(DbStorage.TABLE_MPA, DbStorage.COLUMN_ID, mpaId);
     }
 
     public DBRequest getFilmGenres(long filmId) {
-        return getById(DbStorage.TABLE_GENRES_FILMS, DbStorage.PARAMETER_FILM_ID, filmId);
+        return getById(DbStorage.TABLE_GENRES_FILMS, DbStorage.COLUMN_FILM_ID, filmId);
     }
 
     public DBRequest getGenre(long genreId) {
-        return getById(DbStorage.TABLE_GENRES, DbStorage.PARAMETER_ID, genreId);
+        return getById(DbStorage.TABLE_GENRES, DbStorage.COLUMN_ID, genreId);
     }
 
     public DBRequest getLikes(long filmId) {
-        return getById(DbStorage.TABLE_LIKES, DbStorage.PARAMETER_FILM_ID, filmId);
+        return getById(DbStorage.TABLE_LIKES, DbStorage.COLUMN_FILM_ID, filmId);
     }
 
     public DBRequest deleteLike(long filmId, long likerId) {
-        String query = buildDelete(DbStorage.TABLE_LIKES, DbStorage.PARAMETER_FILM_ID, DbStorage.PARAMETER_USER_ID);
-        Object[] params = new Object[2];
-        params[0] = filmId;
-        params[1] = likerId;
-        return new DBRequest(query, params);
+        String query = buildDeleteQuery(DbStorage.TABLE_LIKES, DbStorage.COLUMN_FILM_ID, DbStorage.COLUMN_USER_ID);
+        return createRequest(query, filmId, likerId);
     }
 
     public DBRequest getPopular(int count) {
         String query = buildPopularQuery();
-        Object[] params = new Object[1];
-        params[0] = count;
-        return new DBRequest(query, params);
+        return createRequest(query, count);
     }
 
     private String buildPopularQuery() {
@@ -112,10 +101,10 @@ public class FilmRequestBuilder extends RequestBuilder {
                         "LIMIT ?" +
                         ") top " +
                         "JOIN %s films ON top.%s = films.id",
-                DbStorage.PARAMETER_FILM_ID,
+                DbStorage.COLUMN_FILM_ID,
                 DbStorage.TABLE_LIKES,
-                DbStorage.PARAMETER_FILM_ID,
-                DbStorage.PARAMETER_USER_ID,
-                DbStorage.TABLE_FILMS, DbStorage.PARAMETER_FILM_ID);
+                DbStorage.COLUMN_FILM_ID,
+                DbStorage.COLUMN_USER_ID,
+                DbStorage.TABLE_FILMS, DbStorage.COLUMN_FILM_ID);
     }
 }

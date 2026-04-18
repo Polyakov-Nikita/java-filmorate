@@ -9,7 +9,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.NullIdException;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.db.storage.GenreDbStorage;
+import ru.yandex.practicum.filmorate.storage.GenreDbStorage;
 
 @JdbcTest
 @AutoConfigureTestDatabase
