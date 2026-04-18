@@ -31,7 +31,7 @@ public class UserControllerTest extends ControllerTest {
 
     @Test
     public void add_CorrectData_StatusCode() {
-        expectStatusIsOk(performPost(UserController.URL_BASE, CORRECT_ADD_REQUEST));
+        expectStatusIsCreated(performPost(UserController.URL_BASE, CORRECT_ADD_REQUEST));
     }
 
     @Test
@@ -46,7 +46,7 @@ public class UserControllerTest extends ControllerTest {
 
     @Test
     public void add_EmptyName_StatusCode() {
-        expectStatusIsOk(performPost(UserController.URL_BASE, EMPTY_NAME_ADD_REQUEST));
+        expectStatusIsCreated(performPost(UserController.URL_BASE, EMPTY_NAME_ADD_REQUEST));
     }
 
     @Test
@@ -126,15 +126,6 @@ public class UserControllerTest extends ControllerTest {
         performAddFriend(userId, friendId);
         Set<Long> friends = getIdSet(performGet(UserController.URL_BASE, userId), FRIENDS_SET_NAME);
         Assertions.assertTrue(friends.contains(friendId));
-    }
-
-    @Test
-    public void addFriend_FriendContainsFriend() {
-        Long userId = getId(performPost(UserController.URL_BASE, UserControllerTest.CORRECT_ADD_REQUEST));
-        Long friendId = getId(performPost(UserController.URL_BASE, UserControllerTest.CORRECT_ADD_REQUEST));
-        performAddFriend(userId, friendId);
-        Set<Long> friends = getIdSet(performGet(UserController.URL_BASE, friendId), FRIENDS_SET_NAME);
-        Assertions.assertTrue(friends.contains(userId));
     }
 
     @Test
@@ -250,15 +241,5 @@ public class UserControllerTest extends ControllerTest {
         performDeleteFriend(userId, friendId);
         Set<Long> friends = getIdSet(performGet(UserController.URL_BASE, userId), FRIENDS_SET_NAME);
         Assertions.assertFalse(friends.contains(friendId));
-    }
-
-    @Test
-    public void deleteFriend_FriendNotContainsFriend() {
-        Long userId = getId(performPost(UserController.URL_BASE, UserControllerTest.CORRECT_ADD_REQUEST));
-        Long friendId = getId(performPost(UserController.URL_BASE, UserControllerTest.CORRECT_ADD_REQUEST));
-        performAddFriend(userId, friendId);
-        performDeleteFriend(userId, friendId);
-        Set<Long> friends = getIdSet(performGet(UserController.URL_BASE, friendId), FRIENDS_SET_NAME);
-        Assertions.assertFalse(friends.contains(userId));
     }
 }

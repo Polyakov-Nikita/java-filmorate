@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.dto.user.UserAddRequest;
+import ru.yandex.practicum.filmorate.dto.user.UserResponse;
+import ru.yandex.practicum.filmorate.dto.user.UserUpdateRequest;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.Set;
 @RestController
 @RequestMapping(UserController.URL_BASE)
 @RequiredArgsConstructor
+@SuppressWarnings("unused")
 public class UserController {
     public static final String URL_BASE = "/users";
     public static final String URL_FRIENDS = "/friends";
@@ -23,13 +26,15 @@ public class UserController {
     private final UserService service;
 
     @PostMapping
-    public User add(@Valid @RequestBody User user) {
-        return service.create(user);
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserResponse add(@Valid @RequestBody UserAddRequest request) {
+        return service.create(request);
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody User user) {
-        return service.update(user);
+    @ResponseStatus(HttpStatus.OK)
+    public UserResponse update(@Valid @RequestBody UserUpdateRequest request) {
+        return service.update(request);
     }
 
     @PutMapping("/{userId}" + URL_FRIENDS + "/{friendId}")
@@ -39,25 +44,26 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getAll() {
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserResponse> getAll() {
         return service.getAll();
     }
 
     @GetMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public User get(@PathVariable long userId) {
+    public UserResponse get(@PathVariable long userId) {
         return service.get(userId);
     }
 
     @GetMapping("/{userId}" + URL_FRIENDS)
     @ResponseStatus(HttpStatus.OK)
-    public Set<User> getFriends(@PathVariable long userId) {
+    public Set<UserResponse> getFriends(@PathVariable long userId) {
         return service.getFriends(userId);
     }
 
     @GetMapping("/{userId}" + URL_FRIENDS + URL_COMMON + "/{otherId}")
     @ResponseStatus(HttpStatus.OK)
-    public Set<User> getCommonFriends(@PathVariable long userId, @PathVariable long otherId) {
+    public Set<UserResponse> getCommonFriends(@PathVariable long userId, @PathVariable long otherId) {
         return service.getCommonFriends(userId, otherId);
     }
 
